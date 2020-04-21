@@ -1,0 +1,6 @@
+# IDES
+.vscode
+
+# CARPETAS
+./dist/
+./resources/logs
