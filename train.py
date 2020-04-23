@@ -1,3 +1,5 @@
+import fnmatch
+
 import tensorflow as tf
 
 from tensorflow.keras.models import Sequential
@@ -27,12 +29,12 @@ model_file = os.path.join(model_dir, 'model.h5')
 weights_file = os.path.join(model_dir, 'weights.h5')
 
 # Summary
-num_cats_tr = len(os.listdir(train_cats_dir))
-num_dogs_tr = len(os.listdir(train_dogs_dir))
-num_gorillas_tr = len(os.listdir(train_gorillas_dir))
-num_cats_val = len(os.listdir(validation_cats_dir))
-num_dogs_val = len(os.listdir(validation_dogs_dir))
-num_gorillas_val = len(os.listdir(validation_gorillas_dir))
+num_cats_tr = len(fnmatch.filter(os.listdir(train_cats_dir), '*.jpg'))
+num_dogs_tr = len(fnmatch.filter(os.listdir(train_dogs_dir), '*.jpg'))
+num_gorillas_tr = len(fnmatch.filter(os.listdir(train_gorillas_dir), '*.jpg'))
+num_cats_val = len(fnmatch.filter(os.listdir(validation_cats_dir), '*.jpg'))
+num_dogs_val = len(fnmatch.filter(os.listdir(validation_dogs_dir), '*.jpg'))
+num_gorillas_val = len(fnmatch.filter(os.listdir(validation_gorillas_dir), '*.jpg'))
 total_train = num_cats_tr + num_dogs_tr + num_gorillas_tr
 total_val = num_cats_val + num_dogs_val + num_gorillas_val
 print('total training cat images:', num_cats_tr)
@@ -52,18 +54,29 @@ IMG_HEIGHT = 150
 IMG_WIDTH = 150
 
 # Get Images
-train_image_generator = ImageDataGenerator(rescale=1./255)  # Generator for our training data
-validation_image_generator = ImageDataGenerator(rescale=1./255)  # Generator for our validation data
-train_data_gen = train_image_generator.flow_from_directory(batch_size=batch_size,
-                                                           directory=train_dir,
-                                                           shuffle=True,
-                                                           target_size=(IMG_HEIGHT, IMG_WIDTH),
-                                                           class_mode='categorical')
+train_image_generator = ImageDataGenerator(
+    rescale=1./255,
+    horizontal_flip=True,
+    rotation_range=45,
+    width_shift_range=.15,
+    height_shift_range=.15,
+    zoom_range=0.5)
 
-val_data_gen = validation_image_generator.flow_from_directory(batch_size=batch_size,
-                                                              directory=validation_dir,
-                                                              target_size=(IMG_HEIGHT, IMG_WIDTH),
-                                                              class_mode='categorical')
+validation_image_generator = ImageDataGenerator(
+    rescale=1./255)
+
+train_data_gen = train_image_generator.flow_from_directory(
+    batch_size=batch_size,
+    directory=train_dir,
+    shuffle=True,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    class_mode='categorical')
+
+val_data_gen = validation_image_generator.flow_from_directory(
+    batch_size=batch_size,
+    directory=validation_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    class_mode='categorical')
 
 # Visualization # Might remove this section
 # sample_training_images, _ = next(train_data_gen)
@@ -86,10 +99,12 @@ val_data_gen = validation_image_generator.flow_from_directory(batch_size=batch_s
 model = Sequential([
     Conv2D(16, 3, padding='same', activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
     MaxPooling2D(),
+    Dropout(0.2),
     Conv2D(32, 3, padding='same', activation='relu'),
     MaxPooling2D(),
     Conv2D(64, 3, padding='same', activation='relu'),
     MaxPooling2D(),
+    Dropout(0.2),
     Flatten(),
     Dense(512, activation='relu'),
     Dense(1)
@@ -97,7 +112,8 @@ model = Sequential([
 
 # Compile the model
 model.compile(optimizer='adam',
-              loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+              # loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+              loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 # Print a summary of the model
