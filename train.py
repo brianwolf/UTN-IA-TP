@@ -52,7 +52,7 @@ epochs = 15
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
 total_classes = 3  # cats, dogs and gorillas
-learning_rate = 0.0004
+learning_rate = 0.00005
 
 # Get Images
 train_image_generator = ImageDataGenerator(
@@ -101,12 +101,12 @@ val_data_gen = validation_image_generator.flow_from_directory(
 model = Sequential([
     Conv2D(16, 3, padding='same', activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
     MaxPooling2D(),
-    Dropout(0.2),
+    Dropout(0.5),
     Conv2D(32, 3, padding='same', activation='relu'),
     MaxPooling2D(),
     Conv2D(64, 3, padding='same', activation='relu'),
     MaxPooling2D(),
-    Dropout(0.2),
+    Dropout(0.5),
     Flatten(),
     Dense(512, activation='relu'),
     Dense(total_classes, activation='softmax')
@@ -123,10 +123,10 @@ model.summary()
 # Train the model
 history = model.fit_generator(
     train_data_gen,
-    steps_per_epoch=total_train // batch_size,
+    steps_per_epoch=total_train // batch_size // 2,  # /2?
     epochs=epochs,
     validation_data=val_data_gen,
-    validation_steps=total_val // batch_size
+    validation_steps=total_val // batch_size // 2  # /2?
 )
 
 # Save the model results
