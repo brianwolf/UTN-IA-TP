@@ -1,6 +1,6 @@
 # APP
-modelo/
-data/
+*.h5
+*.jpg
 
 # IDES
 .vscode/
