@@ -5,8 +5,8 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 longitud, altura = 150, 150
-modelo = './modelo/modelo.h5'
-pesos_modelo = './modelo/pesos.h5'
+modelo = './model/model.h5'
+pesos_modelo = './model/pesos.h5'
 
 cnn = load_model(modelo)
 cnn.load_weights(pesos_modelo)

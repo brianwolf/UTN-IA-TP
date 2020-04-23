@@ -1,86 +1,136 @@
-import sys
+import tensorflow as tf
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
 import os
-from tensorflow.python.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras import optimizers
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dropout, Flatten, Dense, Activation
-from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
-from tensorflow.python.keras import backend as K
+import matplotlib.pyplot as plt
 
-K.clear_session()
+# Based on https://www.tensorflow.org/tutorials/images/classification
 
+# Folders setup
+# Data Folders
+data_dir = os.path.join(os.path.dirname('.'), 'data')
+train_dir = os.path.join(data_dir, 'train')
+validation_dir = os.path.join(data_dir, 'validation')
+train_cats_dir = os.path.join(train_dir, 'cats')
+train_dogs_dir = os.path.join(train_dir, 'dogs')
+train_gorillas_dir = os.path.join(train_dir, 'gorillas')
+validation_cats_dir = os.path.join(validation_dir, 'cats')
+validation_dogs_dir = os.path.join(validation_dir, 'dogs')
+validation_gorillas_dir = os.path.join(validation_dir, 'gorillas')
 
+# Model folders
+model_dir = os.path.join(os.path.dirname('.'), 'model')
+model_file = os.path.join(model_dir, 'model.h5')
+weights_file = os.path.join(model_dir, 'weights.h5')
 
-data_entrenamiento = './data/entrenamiento'
-data_validacion = './data/validacion'
+# Summary
+num_cats_tr = len(os.listdir(train_cats_dir))
+num_dogs_tr = len(os.listdir(train_dogs_dir))
+num_gorillas_tr = len(os.listdir(train_gorillas_dir))
+num_cats_val = len(os.listdir(validation_cats_dir))
+num_dogs_val = len(os.listdir(validation_dogs_dir))
+num_gorillas_val = len(os.listdir(validation_gorillas_dir))
+total_train = num_cats_tr + num_dogs_tr + num_gorillas_tr
+total_val = num_cats_val + num_dogs_val + num_gorillas_val
+print('total training cat images:', num_cats_tr)
+print('total training dog images:', num_dogs_tr)
+print('total training gorillas images:', num_gorillas_tr)
+print('total validation cat images:', num_cats_val)
+print('total validation dog images:', num_dogs_val)
+print('total validation gorillas images:', num_gorillas_val)
+print("--")
+print("Total training images:", total_train)
+print("Total validation images:", total_val)
 
-"""
-Parameters
-"""
-epocas=20
-longitud, altura = 150, 150
-batch_size = 32
-pasos = 1000
-validation_steps = 300
-filtrosConv1 = 32
-filtrosConv2 = 64
-tamano_filtro1 = (3, 3)
-tamano_filtro2 = (2, 2)
-tamano_pool = (2, 2)
-clases = 3
-lr = 0.0004
+# Basic Params
+batch_size = 128
+epochs = 15
+IMG_HEIGHT = 150
+IMG_WIDTH = 150
 
+# Get Images
+train_image_generator = ImageDataGenerator(rescale=1./255)  # Generator for our training data
+validation_image_generator = ImageDataGenerator(rescale=1./255)  # Generator for our validation data
+train_data_gen = train_image_generator.flow_from_directory(batch_size=batch_size,
+                                                           directory=train_dir,
+                                                           shuffle=True,
+                                                           target_size=(IMG_HEIGHT, IMG_WIDTH),
+                                                           class_mode='categorical')
 
-##Preparamos nuestras imagenes
+val_data_gen = validation_image_generator.flow_from_directory(batch_size=batch_size,
+                                                              directory=validation_dir,
+                                                              target_size=(IMG_HEIGHT, IMG_WIDTH),
+                                                              class_mode='categorical')
 
-entrenamiento_datagen = ImageDataGenerator(
-    rescale=1. / 255,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True)
-
-test_datagen = ImageDataGenerator(rescale=1. / 255)
-
-entrenamiento_generador = entrenamiento_datagen.flow_from_directory(
-    data_entrenamiento,
-    target_size=(altura, longitud),
-    batch_size=batch_size,
-    class_mode='categorical')
-
-validacion_generador = test_datagen.flow_from_directory(
-    data_validacion,
-    target_size=(altura, longitud),
-    batch_size=batch_size,
-    class_mode='categorical')
-
-cnn = Sequential()
-cnn.add(Convolution2D(filtrosConv1, tamano_filtro1, padding ="same", input_shape=(longitud, altura, 3), activation='relu'))
-cnn.add(MaxPooling2D(pool_size=tamano_pool))
-
-cnn.add(Convolution2D(filtrosConv2, tamano_filtro2, padding ="same"))
-cnn.add(MaxPooling2D(pool_size=tamano_pool))
-
-cnn.add(Flatten())
-cnn.add(Dense(256, activation='relu'))
-cnn.add(Dropout(0.5))
-cnn.add(Dense(clases, activation='softmax'))
-
-cnn.compile(loss='categorical_crossentropy',
-            optimizer=optimizers.Adam(lr=lr),
-            metrics=['accuracy'])
+# Visualization # Might remove this section
+# sample_training_images, _ = next(train_data_gen)
 
 
+# This function will plot images in the form of a grid with 1 row and 5 columns where images are placed in each column.
+# def plot_images(images_arr):
+#    fig, axes = plt.subplots(1, 5, figsize=(20, 20))
+#    axes = axes.flatten()
+#    for img, ax in zip(images_arr, axes):
+#        ax.imshow(img)
+#        ax.axis('off')
+#    plt.tight_layout()
+#    plt.show()
 
 
-cnn.fit_generator(
-    entrenamiento_generador,
-    steps_per_epoch=pasos,
-    epochs=epocas,
-    validation_data=validacion_generador,
-    validation_steps=validation_steps)
+# lot_images(sample_training_images[:5])
 
-target_dir = './modelo/'
-if not os.path.exists(target_dir):
-  os.mkdir(target_dir)
-cnn.save('./modelo/modelo.h5')
-cnn.save_weights('./modelo/pesos.h5')
+# Generate the model
+model = Sequential([
+    Conv2D(16, 3, padding='same', activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
+    MaxPooling2D(),
+    Conv2D(32, 3, padding='same', activation='relu'),
+    MaxPooling2D(),
+    Conv2D(64, 3, padding='same', activation='relu'),
+    MaxPooling2D(),
+    Flatten(),
+    Dense(512, activation='relu'),
+    Dense(1)
+])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+
+# Print a summary of the model
+model.summary()
+
+# Train the model
+history = model.fit_generator(
+    train_data_gen,
+    steps_per_epoch=total_train // batch_size,
+    epochs=epochs,
+    validation_data=val_data_gen,
+    validation_steps=total_val // batch_size
+)
+
+# Save the model results
+model.save(model_file)
+model.save_weights(weights_file)
+
+# Plot the results
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+epochs_range = range(epochs)
+plt.figure(figsize=(8, 8))
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, acc, label='Training Accuracy')
+plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+plt.legend(loc='lower right')
+plt.title('Training and Validation Accuracy')
+plt.subplot(1, 2, 2)
+plt.plot(epochs_range, loss, label='Training Loss')
+plt.plot(epochs_range, val_loss, label='Validation Loss')
+plt.legend(loc='upper right')
+plt.title('Training and Validation Loss')
+plt.show()
