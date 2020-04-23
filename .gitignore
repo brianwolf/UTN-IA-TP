@@ -1,11 +1,12 @@
 # APP
 logs/
 modelo/
-
+data/
 
 # IDES
 .vscode/
 .idea/
+venv/
 
 # PYTHON
 
