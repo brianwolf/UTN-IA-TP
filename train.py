@@ -1,5 +1,6 @@
 import fnmatch
 
+from tensorflow import optimizers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -51,6 +52,7 @@ epochs = 15
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
 total_classes = 3  # cats, dogs and gorillas
+learning_rate = 0.0004
 
 # Get Images
 train_image_generator = ImageDataGenerator(
@@ -111,7 +113,7 @@ model = Sequential([
 ])
 
 # Compile the model
-model.compile(optimizer='adam',
+model.compile(optimizer=optimizers.Adam(lr=learning_rate),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
