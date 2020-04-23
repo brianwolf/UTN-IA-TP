@@ -1,7 +1,5 @@
 import fnmatch
 
-import tensorflow as tf
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -11,8 +9,8 @@ import matplotlib.pyplot as plt
 
 # Based on https://www.tensorflow.org/tutorials/images/classification
 
-# Folders setup
-# Data Folders
+# Folders Setup
+# Data Folder
 data_dir = os.path.join(os.path.dirname('.'), 'data')
 train_dir = os.path.join(data_dir, 'train')
 validation_dir = os.path.join(data_dir, 'validation')
@@ -23,7 +21,7 @@ validation_cats_dir = os.path.join(validation_dir, 'cats')
 validation_dogs_dir = os.path.join(validation_dir, 'dogs')
 validation_gorillas_dir = os.path.join(validation_dir, 'gorillas')
 
-# Model folders
+# Model Folder
 model_dir = os.path.join(os.path.dirname('.'), 'model')
 model_file = os.path.join(model_dir, 'model.h5')
 weights_file = os.path.join(model_dir, 'weights.h5')
@@ -37,12 +35,12 @@ num_dogs_val = len(fnmatch.filter(os.listdir(validation_dogs_dir), '*.jpg'))
 num_gorillas_val = len(fnmatch.filter(os.listdir(validation_gorillas_dir), '*.jpg'))
 total_train = num_cats_tr + num_dogs_tr + num_gorillas_tr
 total_val = num_cats_val + num_dogs_val + num_gorillas_val
-print('total training cat images:', num_cats_tr)
-print('total training dog images:', num_dogs_tr)
-print('total training gorillas images:', num_gorillas_tr)
-print('total validation cat images:', num_cats_val)
-print('total validation dog images:', num_dogs_val)
-print('total validation gorillas images:', num_gorillas_val)
+print('Total training cat images:', num_cats_tr)
+print('Total training dog images:', num_dogs_tr)
+print('Total training gorillas images:', num_gorillas_tr)
+print('Total validation cat images:', num_cats_val)
+print('Total validation dog images:', num_dogs_val)
+print('Total validation gorillas images:', num_gorillas_val)
 print("--")
 print("Total training images:", total_train)
 print("Total validation images:", total_val)
@@ -52,6 +50,7 @@ batch_size = 128
 epochs = 15
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
+total_classes = 3  # cats, dogs and gorillas
 
 # Get Images
 train_image_generator = ImageDataGenerator(
@@ -68,13 +67,14 @@ validation_image_generator = ImageDataGenerator(
 train_data_gen = train_image_generator.flow_from_directory(
     batch_size=batch_size,
     directory=train_dir,
-    shuffle=True,
+    shuffle=False,
     target_size=(IMG_HEIGHT, IMG_WIDTH),
     class_mode='categorical')
 
 val_data_gen = validation_image_generator.flow_from_directory(
     batch_size=batch_size,
     directory=validation_dir,
+    shuffle=False,
     target_size=(IMG_HEIGHT, IMG_WIDTH),
     class_mode='categorical')
 
@@ -107,12 +107,11 @@ model = Sequential([
     Dropout(0.2),
     Flatten(),
     Dense(512, activation='relu'),
-    Dense(1)
+    Dense(total_classes, activation='softmax')
 ])
 
 # Compile the model
 model.compile(optimizer='adam',
-              # loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
