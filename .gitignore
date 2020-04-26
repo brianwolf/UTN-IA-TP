@@ -1,6 +1,5 @@
 # APP
 *.h5
-*.jpg
 
 # IDES
 .vscode/

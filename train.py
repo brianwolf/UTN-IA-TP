@@ -1,125 +1,112 @@
-import fnmatch
-
+from tensorflow.python.keras.layers import Reshape, Flatten, Dropout
+from tensorflow.python.keras.utils.vis_utils import plot_model
 from tensorflow import optimizers
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
+from tensorflow.keras.layers import Dense
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
+import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
+import tensorflow.keras.backend as backend
 
-# Based on https://www.tensorflow.org/tutorials/images/classification
+# Using Pokemon Generation One dataset
+# https://www.kaggle.com/thedagger/pokemon-generation-one
+# For each pokemon I select 50 different pictures of the original dataset and move them in the validation folder
+# The remaining pictures of each pokemon go to each train folder (around 150 for training and 50 validation)
+# The rationale behind this is to have different training and validation sets
+# In the output folders you can see automatically resized and grayscaled images
+# along with the data augmented pictures (rotated, zoomed, etc).
 
 # Folders Setup
 # Data Folder
 data_dir = os.path.join(os.path.dirname('.'), 'data')
 train_dir = os.path.join(data_dir, 'train')
 validation_dir = os.path.join(data_dir, 'validation')
-train_cats_dir = os.path.join(train_dir, 'cats')
-train_dogs_dir = os.path.join(train_dir, 'dogs')
-train_gorillas_dir = os.path.join(train_dir, 'gorillas')
-validation_cats_dir = os.path.join(validation_dir, 'cats')
-validation_dogs_dir = os.path.join(validation_dir, 'dogs')
-validation_gorillas_dir = os.path.join(validation_dir, 'gorillas')
+output_train_dir = os.path.join(data_dir, 'output_train')
+output_validation_dir = os.path.join(data_dir, 'output_validation')
+total_train = sum([len(files) for r, d, files in os.walk(train_dir)])
+total_val = sum([len(files) for r, d, files in os.walk(validation_dir)])
 
 # Model Folder
 model_dir = os.path.join(os.path.dirname('.'), 'model')
 model_file = os.path.join(model_dir, 'model.h5')
 weights_file = os.path.join(model_dir, 'weights.h5')
-
-# Summary
-num_cats_tr = len(fnmatch.filter(os.listdir(train_cats_dir), '*.jpg'))
-num_dogs_tr = len(fnmatch.filter(os.listdir(train_dogs_dir), '*.jpg'))
-num_gorillas_tr = len(fnmatch.filter(os.listdir(train_gorillas_dir), '*.jpg'))
-num_cats_val = len(fnmatch.filter(os.listdir(validation_cats_dir), '*.jpg'))
-num_dogs_val = len(fnmatch.filter(os.listdir(validation_dogs_dir), '*.jpg'))
-num_gorillas_val = len(fnmatch.filter(os.listdir(validation_gorillas_dir), '*.jpg'))
-total_train = num_cats_tr + num_dogs_tr + num_gorillas_tr
-total_val = num_cats_val + num_dogs_val + num_gorillas_val
-print('Total training cat images:', num_cats_tr)
-print('Total training dog images:', num_dogs_tr)
-print('Total training gorillas images:', num_gorillas_tr)
-print('Total validation cat images:', num_cats_val)
-print('Total validation dog images:', num_dogs_val)
-print('Total validation gorillas images:', num_gorillas_val)
-print("--")
-print("Total training images:", total_train)
-print("Total validation images:", total_val)
+model_plot_file = os.path.join(model_dir, 'model.png')
 
 # Basic Params
-batch_size = 256
-epochs = 15
-IMG_HEIGHT = 150
-IMG_WIDTH = 150
-total_classes = 3  # cats, dogs and gorillas
+batch_size = 32
+epochs = 20
+IMG_HEIGHT = 28
+IMG_WIDTH = 28
+total_classes = 4  # 4 different types of pokemons in our dataset
 learning_rate = 0.000001
+if backend.image_data_format == "channels_last":
+    input_shape = (IMG_HEIGHT, IMG_WIDTH, 1)
+else:
+    input_shape = (1, IMG_HEIGHT, IMG_WIDTH)
 
 # Get Images
 train_image_generator = ImageDataGenerator(
-    rescale=1./255,
+    rescale=1. / 255,
     horizontal_flip=True,
     rotation_range=45,
-    width_shift_range=.15,
-    height_shift_range=.15,
     zoom_range=0.2,
     shear_range=0.2)
 
 validation_image_generator = ImageDataGenerator(
-    rescale=1./255)
+    rescale=1. / 255)
 
 train_data_gen = train_image_generator.flow_from_directory(
     batch_size=batch_size,
     directory=train_dir,
-    shuffle=False,
+    shuffle=True,
     target_size=(IMG_HEIGHT, IMG_WIDTH),
-    class_mode='categorical')
+    color_mode="grayscale",
+    class_mode='categorical',
+    save_to_dir=output_train_dir)
 
 val_data_gen = validation_image_generator.flow_from_directory(
     batch_size=batch_size,
     directory=validation_dir,
-    shuffle=False,
+    shuffle=True,
     target_size=(IMG_HEIGHT, IMG_WIDTH),
-    class_mode='categorical')
-
-# Visualization # Might remove this section
-# sample_training_images, _ = next(train_data_gen)
-
-
-# This function will plot images in the form of a grid with 1 row and 5 columns where images are placed in each column.
-# def plot_images(images_arr):
-#    fig, axes = plt.subplots(1, 5, figsize=(20, 20))
-#    axes = axes.flatten()
-#    for img, ax in zip(images_arr, axes):
-#        ax.imshow(img)
-#        ax.axis('off')
-#    plt.tight_layout()
-#    plt.show()
-
-
-# lot_images(sample_training_images[:5])
+    color_mode="grayscale",
+    class_mode='categorical',
+    save_to_dir=output_validation_dir)
 
 # Generate the model
 model = Sequential([
-    Conv2D(16, 3, padding='same', activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
-    MaxPooling2D(),
-    Dropout(0.5),
-    Conv2D(32, 3, padding='same', activation='relu'),
-    MaxPooling2D(),
-    Conv2D(64, 3, padding='same', activation='relu'),
-    MaxPooling2D(),
-    Dropout(0.5),
-    Flatten(),
-    Dense(1024, activation='relu'),
+    Flatten(input_shape=(28, 28)),  # Converts the source to a 784 array
+    Dense(units=128, activation='relu'),
     Dense(total_classes, activation='softmax')
 ])
+
+# model = Sequential([
+#     Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),  # Converts the source to a 784 array
+#     # Flatten(input_shape=(IMG_HEIGHT, IMG_WIDTH)),  # Converts the source to a 784 array
+#     Dense(units=1024, activation='relu'),
+#     Dropout(0.2),
+#     Dense(units=512, activation='relu'),
+#     Dropout(0.2),
+#     Dense(units=256, activation='relu'),
+#     Dropout(0.2),
+#     Dense(total_classes, activation='softmax')
+# ])
 
 # Compile the model
 model.compile(optimizer=optimizers.Adam(lr=learning_rate),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
+# model.compile(optimizer=optimizers.SGD(learning_rate=learning_rate),
+#               loss='categorical_crossentropy',
+#               metrics=['accuracy'])
+
 # Print a summary of the model
 model.summary()
+
+# Plot the model to understand it
+plot_model(model, to_file=model_plot_file, show_shapes='true', show_layer_names='true')
 
 # Train the model
 history = model.fit_generator(
