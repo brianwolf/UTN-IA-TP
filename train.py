@@ -1,4 +1,4 @@
-from tensorflow.python.keras.layers import Flatten, Dropout
+from tensorflow.python.keras.layers import Flatten, Dropout, Reshape
 from tensorflow.python.keras.utils.vis_utils import plot_model
 from tensorflow import optimizers
 from tensorflow.keras.models import Sequential
@@ -14,9 +14,7 @@ import tensorflow.keras.backend as backend
 
 # From these datasets, first we get the following folders "Charmander, Pikachu, Bulbasaur and Squirtle"
 # Then we get only relevant pictures, removing unrelated or noisy pictures, pictures of toys, etc.
-# For each pokemon I select a few different pictures (around 20%) of the original dataset
-# and move them into the validation folder, the remaining pictures of each pokemon go to each train folder
-# The rationale behind this is to have different training and validation sets
+# Normalized the training files, removed the background
 # In the output folders you can see automatically resized and grayscaled images
 # along with the data augmented pictures (rotated, zoomed, etc).
 
@@ -37,12 +35,12 @@ weights_file = os.path.join(model_dir, 'weights.h5')
 model_plot_file = os.path.join(model_dir, 'model.png')
 
 # Basic Params
-batch_size = 32
+batch_size = 4  # con 8 llego a 1 de accuracy y 0.algo de loss
 epochs = 100
 IMG_HEIGHT = 100
 IMG_WIDTH = 100
 total_classes = 4  # 4 different types of pokemons in our dataset
-learning_rate = 0.000000001
+learning_rate = 0.000001
 if backend.image_data_format == "channels_last":
     input_shape = (IMG_HEIGHT, IMG_WIDTH, 1)
 else:
@@ -52,9 +50,14 @@ else:
 train_image_generator = ImageDataGenerator(
     rescale=1. / 255,
     horizontal_flip=True,
-    rotation_range=45,
-    zoom_range=0.2,
-    shear_range=0.2)
+    # vertical_flip=True,
+    # rotation_range=45,
+    # zoom_range=0.5,
+    # shear_range=0.5,
+    # width_shift_range=0.5,
+    # height_shift_range=0.5,
+    # validation_split=0.2)
+    )
 
 validation_image_generator = ImageDataGenerator(
     rescale=1. / 255)
@@ -79,13 +82,12 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 # Generate the model
 model = Sequential([
-    Flatten(input_shape=(IMG_HEIGHT, IMG_WIDTH)),  # Converts the source to a 784 array
+    Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),
+    # Dense(units=10240, activation='relu'),
+    # Dropout(0.2),
+    # Dense(units=10240, activation='relu'),
+    # Dropout(0.2),
     Dense(units=10240, activation='relu'),
-    Dropout(0.2),
-    Dense(units=4096, activation='relu'),
-    Dropout(0.2),
-    Dense(units=1024, activation='relu'),
-    Dropout(0.2),
     Dense(total_classes, activation='softmax')
 ])
 
@@ -106,10 +108,6 @@ model.compile(optimizer=optimizers.Adam(lr=learning_rate),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-# model.compile(optimizer=optimizers.SGD(learning_rate=learning_rate),
-#               loss='categorical_crossentropy',
-#               metrics=['accuracy'])
-
 # Print a summary of the model
 model.summary()
 
@@ -117,8 +115,8 @@ model.summary()
 plot_model(model, to_file=model_plot_file, show_shapes='true', show_layer_names='true')
 
 # Train the model
-history = model.fit_generator(
-    train_data_gen,
+history = model.fit(
+    x=train_data_gen,
     steps_per_epoch=total_train // batch_size,
     epochs=epochs,
     validation_data=val_data_gen,
