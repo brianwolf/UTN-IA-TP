@@ -31,15 +31,15 @@ total_val = sum([len(files) for r, d, files in os.walk(validation_dir)])
 model_dir = os.path.join(os.path.dirname('.'), 'model')
 model_file = os.path.join(model_dir, 'model.h5')
 weights_file = os.path.join(model_dir, 'weights.h5')
-model_plot_file = os.path.join(model_dir, 'model.png')
+model_plot_file = os.path.join(model_dir, 'Model.png')
 
 # Basic Params
-batch_size = 4
-epochs = 100
+batch_size = 4  # using a batch size of 4 we get to loss: 0.2835 - accuracy: 1.0000 - val_loss: 0.9179 - val_accuracy: 0.6000
+epochs = 100  # running 100 epochs we get to loss: 0.2835 - accuracy: 1.0000 - val_loss: 0.9179 - val_accuracy: 0.6000
 IMG_HEIGHT = 100
 IMG_WIDTH = 100
 total_classes = 4  # 4 different types of pokemons in our dataset
-learning_rate = 0.000001
+learning_rate = 0.000001  # using a learning rate of 0.000001 we get to loss: 0.2835 - accuracy: 1.0000 - val_loss: 0.9179 - val_accuracy: 0.6000
 if backend.image_data_format == "channels_last":
     input_shape = (IMG_HEIGHT, IMG_WIDTH, 1)
 else:
