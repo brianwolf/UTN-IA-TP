@@ -9,10 +9,14 @@ import os
 import matplotlib.pyplot as plt
 import tensorflow.keras.backend as backend
 
-# Using Pokemon Generation One dataset
+# Using these two Pokemon Generation One datasets
 # https://www.kaggle.com/thedagger/pokemon-generation-one
-# For each pokemon I select 50 different pictures of the original dataset and move them in the validation folder
-# The remaining pictures of each pokemon go to each train folder (around 150 for training and 50 validation)
+# https://github.com/Akshay090/pokemon-image-dataset
+
+# From these datasets, first we get the following folders "Charmander, Pikachu, Bulbasaur and Squirtle"
+# Then we get only relevant pictures, removing unrelated or noisy pictures, pictures of toys, etc.
+# For each pokemon I select a few different pictures (around 20%) of the original dataset
+# and move them into the validation folder, the remaining pictures of each pokemon go to each train folder
 # The rationale behind this is to have different training and validation sets
 # In the output folders you can see automatically resized and grayscaled images
 # along with the data augmented pictures (rotated, zoomed, etc).
