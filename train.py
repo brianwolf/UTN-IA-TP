@@ -12,11 +12,10 @@ import tensorflow.keras.backend as backend
 # https://www.kaggle.com/thedagger/pokemon-generation-one
 # https://github.com/Akshay090/pokemon-image-dataset
 
-# From these datasets, first we get the following folders "Charmander, Pikachu, Bulbasaur and Squirtle"
+# From these datasets, first we get the folders "Charmander, Pikachu, Bulbasaur and Squirtle"
 # Then we get only relevant pictures, removing unrelated or noisy pictures, pictures of toys, etc.
-# Normalized the training files, removed the background
-# In the output folders you can see automatically resized and grayscaled images
-# along with the data augmented pictures (rotated, zoomed, etc).
+# We then normalized the training files, removed the background.
+# In the output folders you can see automatically resized and grayscaled images.
 
 # Folders Setup
 # Data Folder
@@ -35,7 +34,7 @@ weights_file = os.path.join(model_dir, 'weights.h5')
 model_plot_file = os.path.join(model_dir, 'model.png')
 
 # Basic Params
-batch_size = 4  # con 8 llego a 1 de accuracy y 0.algo de loss
+batch_size = 4
 epochs = 100
 IMG_HEIGHT = 100
 IMG_WIDTH = 100
@@ -55,8 +54,7 @@ train_image_generator = ImageDataGenerator(
     # zoom_range=0.5,
     # shear_range=0.5,
     # width_shift_range=0.5,
-    # height_shift_range=0.5,
-    # validation_split=0.2)
+    # height_shift_range=0.5,)
     )
 
 validation_image_generator = ImageDataGenerator(

@@ -11,19 +11,19 @@ from tensorflow.keras.preprocessing.image import img_to_array, load_img
 # Folders Setup
 # Data Folder
 data_dir = os.path.join(os.path.dirname('.'), 'data')
-validation_dir = os.path.join(data_dir, 'validation')
-validation_bulbasaur_dir = os.path.join(validation_dir, 'Bulbasaur')
-validation_charmander_dir = os.path.join(validation_dir, 'Charmander')
-validation_pikachu_dir = os.path.join(validation_dir, 'Pikachu')
-validation_squirtle_dir = os.path.join(validation_dir, 'Squirtle')
-num_bulbasaur_val = len(fnmatch.filter(os.listdir(validation_bulbasaur_dir), '*'))
-num_charmander_val = len(fnmatch.filter(os.listdir(validation_charmander_dir), '*'))
-num_pikachu_val = len(fnmatch.filter(os.listdir(validation_pikachu_dir), '*'))
-num_squirtle_val = len(fnmatch.filter(os.listdir(validation_squirtle_dir), '*'))
-bulbasaur_files = [f for f in listdir(validation_bulbasaur_dir) if isfile(join(validation_bulbasaur_dir, f))]
-charmander_files = [f for f in listdir(validation_charmander_dir) if isfile(join(validation_charmander_dir, f))]
-pikachu_files = [f for f in listdir(validation_pikachu_dir) if isfile(join(validation_pikachu_dir, f))]
-squirtle_files = [f for f in listdir(validation_squirtle_dir) if isfile(join(validation_squirtle_dir, f))]
+tests_dir = os.path.join(data_dir, 'tests')
+tests_bulbasaur_dir = os.path.join(tests_dir, 'Bulbasaur')
+tests_charmander_dir = os.path.join(tests_dir, 'Charmander')
+tests_pikachu_dir = os.path.join(tests_dir, 'Pikachu')
+tests_squirtle_dir = os.path.join(tests_dir, 'Squirtle')
+num_bulbasaur_val = (len(fnmatch.filter(os.listdir(tests_bulbasaur_dir), '*')) - 1) * 2
+num_charmander_val = (len(fnmatch.filter(os.listdir(tests_charmander_dir), '*')) - 1) * 2
+num_pikachu_val = (len(fnmatch.filter(os.listdir(tests_pikachu_dir), '*')) - 1) * 2
+num_squirtle_val = (len(fnmatch.filter(os.listdir(tests_squirtle_dir), '*')) - 1) * 2
+bulbasaur_files = [f for f in listdir(tests_bulbasaur_dir) if isfile(join(tests_bulbasaur_dir, f))]
+charmander_files = [f for f in listdir(tests_charmander_dir) if isfile(join(tests_charmander_dir, f))]
+pikachu_files = [f for f in listdir(tests_pikachu_dir) if isfile(join(tests_pikachu_dir, f))]
+squirtle_files = [f for f in listdir(tests_squirtle_dir) if isfile(join(tests_squirtle_dir, f))]
 bulbasaur_files.remove('.gitignore')
 charmander_files.remove('.gitignore')
 pikachu_files.remove('.gitignore')
@@ -83,16 +83,16 @@ true_negative_bulbasaur = 0
 false_negative_bulbasaur = 0
 for bulbasaur_file in bulbasaur_files:
 
-    print(f'bulbasaur: {bulbasaur_file}')
+    print(f'Bulbasaur: {bulbasaur_file}')
 
-    bulbasaur_image = os.path.join(validation_bulbasaur_dir, bulbasaur_file)
+    bulbasaur_image = os.path.join(tests_bulbasaur_dir, bulbasaur_file)
     if predict(bulbasaur_image) == PokemonType.BULBASAUR:
         true_positive_bulbasaur += 1
     else:
         false_negative_bulbasaur += 1
 
-    random_charmander_number = random.randint(0, len(charmander_files) -1)
-    charmander_image = os.path.join(validation_charmander_dir, charmander_files[random_charmander_number])
+    random_charmander_number = random.randint(0, len(charmander_files) - 1)
+    charmander_image = os.path.join(tests_charmander_dir, charmander_files[random_charmander_number])
     if predict(charmander_image) == PokemonType.BULBASAUR:
         false_positive_bulbasaur += 1
     else:
@@ -105,16 +105,16 @@ true_negative_charmander = 0
 false_negative_charmander = 0
 for charmander_file in charmander_files:
 
-    print(f'charmander: {charmander_file}')
+    print(f'Charmander: {charmander_file}')
 
-    charmander_image = os.path.join(validation_charmander_dir, charmander_file)
+    charmander_image = os.path.join(tests_charmander_dir, charmander_file)
     if predict(charmander_image) == PokemonType.CHARMANDER:
         true_positive_charmander += 1
     else:
         false_negative_charmander += 1
 
     random_pikachu_number = random.randint(0, len(pikachu_files) - 1)
-    pikachu_image = os.path.join(validation_pikachu_dir, pikachu_files[random_pikachu_number])
+    pikachu_image = os.path.join(tests_pikachu_dir, pikachu_files[random_pikachu_number])
     if predict(pikachu_image) == PokemonType.CHARMANDER:
         false_positive_charmander += 1
     else:
@@ -127,17 +127,17 @@ true_negative_pikachu = 0
 false_negative_pikachu = 0
 for pikachu_file in pikachu_files:
 
-    print(f'pikachu: {pikachu_file}')
+    print(f'Pikachu: {pikachu_file}')
 
-    pikachu_image = os.path.join(validation_pikachu_dir, pikachu_file)
+    pikachu_image = os.path.join(tests_pikachu_dir, pikachu_file)
     if predict(pikachu_image) == PokemonType.PIKACHU:
         true_positive_pikachu += 1
     else:
         false_negative_pikachu += 1
 
     random_squirtle_number = random.randint(0, len(squirtle_files) - 1)
-    squirtle_image = os.path.join(validation_squirtle_dir, squirtle_files[random_squirtle_number])
-    if predict(charmander_image) == PokemonType.PIKACHU:
+    squirtle_image = os.path.join(tests_squirtle_dir, squirtle_files[random_squirtle_number])
+    if predict(squirtle_image) == PokemonType.PIKACHU:
         false_positive_pikachu += 1
     else:
         true_negative_pikachu += 1
@@ -150,17 +150,17 @@ true_negative_squirtle = 0
 false_negative_squirtle = 0
 for squirtle_file in squirtle_files:
 
-    print(f'squirtle: {squirtle_file}')
+    print(f'Squirtle: {squirtle_file}')
 
-    squirtle_image = os.path.join(validation_squirtle_dir, squirtle_file)
+    squirtle_image = os.path.join(tests_squirtle_dir, squirtle_file)
     if predict(squirtle_image) == PokemonType.SQUIRTLE:
         true_positive_squirtle += 1
     else:
         false_negative_squirtle += 1
 
-    random_charmander_number = random.randint(0, len(charmander_files) - 1)
-    charmander_image = os.path.join(validation_charmander_dir, charmander_files[random_charmander_number])
-    if predict(charmander_image) == PokemonType.SQUIRTLE:
+    random_bulbasaur_number = random.randint(0, len(bulbasaur_files) - 1)
+    bulbasaur_image = os.path.join(tests_bulbasaur_dir, bulbasaur_files[random_bulbasaur_number])
+    if predict(bulbasaur_image) == PokemonType.SQUIRTLE:
         false_positive_squirtle += 1
     else:
         true_negative_squirtle += 1
@@ -172,7 +172,6 @@ print(
     f'Bulb -> TN: {true_negative_bulbasaur}, '
     f'Bulb -> FN: {false_negative_bulbasaur}, '
     f'Total Tests: {num_bulbasaur_val}, '
-    f'Percentage: {100 * true_positive_bulbasaur / num_bulbasaur_val}%',
     f'Accuracy: {(true_positive_bulbasaur + true_negative_bulbasaur) / (true_positive_bulbasaur + false_positive_bulbasaur + true_negative_bulbasaur + false_negative_bulbasaur)}%',
     f'Precision: {true_positive_bulbasaur / (true_positive_bulbasaur + false_positive_bulbasaur)}%',
     f'Recall: {true_positive_bulbasaur / (true_positive_bulbasaur + false_negative_bulbasaur)}%',
@@ -183,7 +182,6 @@ print(
     f'Char -> TN: {true_negative_charmander}, '
     f'Char -> FN: {false_negative_charmander}, '
     f'Total Tests: {num_charmander_val}, '
-    f'Percentage: {100 * true_positive_charmander / num_charmander_val}%',
     f'Accuracy: {(true_positive_charmander + true_negative_charmander) / (true_positive_charmander + false_positive_charmander + true_negative_charmander + false_negative_charmander)}%',
     f'Precision: {true_positive_charmander / (true_positive_charmander + false_positive_charmander)}%',
     f'Recall: {true_positive_charmander / (true_positive_charmander + false_negative_charmander)}%',
@@ -194,7 +192,6 @@ print(
     f'Pika -> TN: {true_negative_pikachu}, '
     f'Pika -> FN: {false_negative_pikachu}, '
     f'Total Tests: {num_pikachu_val}, '
-    f'Percentage: {100 * true_positive_pikachu / num_pikachu_val}%',
     f'Accuracy: {(true_positive_pikachu + true_negative_pikachu) / (true_positive_pikachu + false_positive_pikachu + true_negative_pikachu + false_negative_pikachu)}%',
     f'Precision: {true_positive_pikachu / (true_positive_pikachu + false_positive_pikachu)}%',
     f'Recall: {true_positive_pikachu / (true_positive_pikachu + false_negative_pikachu)}%',
@@ -205,7 +202,6 @@ print(
     f'Squi -> TN: {true_negative_squirtle}, '
     f'Squi -> FN: {false_negative_squirtle}, '
     f'Total Tests: {num_squirtle_val}, '
-    f'Percentage: {100 * true_positive_squirtle / num_squirtle_val}%',
     f'Accuracy: {(true_positive_squirtle + true_negative_squirtle) / (true_positive_squirtle + false_positive_squirtle + true_negative_squirtle + false_negative_squirtle)}%',
     f'Precision: {true_positive_squirtle / (true_positive_squirtle + false_positive_squirtle)}%',
     f'Recall: {true_positive_squirtle / (true_positive_squirtle + false_negative_squirtle)}%',
