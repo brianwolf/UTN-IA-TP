@@ -1,10 +1,9 @@
-from tensorflow.python.keras.layers import Reshape, Flatten, Dropout
+from tensorflow.python.keras.layers import Flatten, Dropout
 from tensorflow.python.keras.utils.vis_utils import plot_model
 from tensorflow import optimizers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
 import tensorflow.keras.backend as backend
@@ -39,11 +38,11 @@ model_plot_file = os.path.join(model_dir, 'model.png')
 
 # Basic Params
 batch_size = 32
-epochs = 20
-IMG_HEIGHT = 28
-IMG_WIDTH = 28
+epochs = 100
+IMG_HEIGHT = 100
+IMG_WIDTH = 100
 total_classes = 4  # 4 different types of pokemons in our dataset
-learning_rate = 0.000001
+learning_rate = 0.000000001
 if backend.image_data_format == "channels_last":
     input_shape = (IMG_HEIGHT, IMG_WIDTH, 1)
 else:
@@ -80,8 +79,13 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 # Generate the model
 model = Sequential([
-    Flatten(input_shape=(28, 28)),  # Converts the source to a 784 array
-    Dense(units=128, activation='relu'),
+    Flatten(input_shape=(IMG_HEIGHT, IMG_WIDTH)),  # Converts the source to a 784 array
+    Dense(units=10240, activation='relu'),
+    Dropout(0.2),
+    Dense(units=4096, activation='relu'),
+    Dropout(0.2),
+    Dense(units=1024, activation='relu'),
+    Dropout(0.2),
     Dense(total_classes, activation='softmax')
 ])
 
