@@ -12,10 +12,12 @@ import tensorflow.keras.backend as backend
 # https://www.kaggle.com/thedagger/pokemon-generation-one
 # https://github.com/Akshay090/pokemon-image-dataset
 
-# From these datasets, first we get the folders "Charmander, Pikachu, Bulbasaur and Squirtle"
-# Then we get only relevant pictures, removing unrelated or noisy pictures, pictures of toys, etc.
-# We then normalized the training files, removed the background.
+# From these datasets we mixed the folders "Charmander, Pikachu, Bulbasaur and Squirtle"
+# Then we got only relevant pictures, removing unrelated or noisy pictures, pictures of toys, etc.
+# We then normalized the training files and removed the background.
 # In the output folders you can see automatically resized and grayscaled images.
+# We use a 80/20 training/validation ratio.
+# In the tests folder you would put the "target" pictures to try to predict.
 
 # Folders Setup
 # Data Folder
@@ -34,12 +36,12 @@ weights_file = os.path.join(model_dir, 'weights.h5')
 model_plot_file = os.path.join(model_dir, 'Model.png')
 
 # Basic Params
-batch_size = 4  # using a batch size of 4 we get to loss: 0.2835 - accuracy: 1.0000 - val_loss: 0.9179 - val_accuracy: 0.6000
-epochs = 100  # running 100 epochs we get to loss: 0.2835 - accuracy: 1.0000 - val_loss: 0.9179 - val_accuracy: 0.6000
+batch_size = 2
+epochs = 100
 IMG_HEIGHT = 100
 IMG_WIDTH = 100
 total_classes = 4  # 4 different types of pokemons in our dataset
-learning_rate = 0.000001  # using a learning rate of 0.000001 we get to loss: 0.2835 - accuracy: 1.0000 - val_loss: 0.9179 - val_accuracy: 0.6000
+learning_rate = 0.001
 if backend.image_data_format == "channels_last":
     input_shape = (IMG_HEIGHT, IMG_WIDTH, 1)
 else:
@@ -80,26 +82,11 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 # Generate the model
 model = Sequential([
-    Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),
-    # Dense(units=10240, activation='relu'),
-    # Dropout(0.2),
-    # Dense(units=10240, activation='relu'),
-    # Dropout(0.2),
+    Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),  # Converts the source to a 784 array
+    Dense(units=10240, activation='relu'),
     Dense(units=10240, activation='relu'),
     Dense(total_classes, activation='softmax')
 ])
-
-# model = Sequential([
-#     Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),  # Converts the source to a 784 array
-#     # Flatten(input_shape=(IMG_HEIGHT, IMG_WIDTH)),  # Converts the source to a 784 array
-#     Dense(units=1024, activation='relu'),
-#     Dropout(0.2),
-#     Dense(units=512, activation='relu'),
-#     Dropout(0.2),
-#     Dense(units=256, activation='relu'),
-#     Dropout(0.2),
-#     Dense(total_classes, activation='softmax')
-# ])
 
 # Compile the model
 model.compile(optimizer=optimizers.Adam(lr=learning_rate),

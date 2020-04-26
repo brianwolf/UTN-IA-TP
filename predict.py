@@ -7,7 +7,7 @@ from os.path import isfile, join
 import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
-
+s
 # Folders Setup
 # Data Folder
 data_dir = os.path.join(os.path.dirname('.'), 'data')
@@ -172,9 +172,9 @@ print(
     f'Bulb -> TN: {true_negative_bulbasaur}, '
     f'Bulb -> FN: {false_negative_bulbasaur}, '
     f'Total Tests: {num_bulbasaur_val}, '
-    f'Accuracy: {(true_positive_bulbasaur + true_negative_bulbasaur) / (true_positive_bulbasaur + false_positive_bulbasaur + true_negative_bulbasaur + false_negative_bulbasaur)}%',
-    f'Precision: {true_positive_bulbasaur / (true_positive_bulbasaur + false_positive_bulbasaur)}%',
-    f'Recall: {true_positive_bulbasaur / (true_positive_bulbasaur + false_negative_bulbasaur)}%',
+    f'Accuracy: {(true_positive_bulbasaur + true_negative_bulbasaur) / (true_positive_bulbasaur + false_positive_bulbasaur + true_negative_bulbasaur + false_negative_bulbasaur)}, ',
+    f'Precision: {true_positive_bulbasaur / (true_positive_bulbasaur + false_positive_bulbasaur)}, ',
+    f'Recall: {true_positive_bulbasaur / (true_positive_bulbasaur + false_negative_bulbasaur)}',
     )
 print(
     f'Char -> TP: {true_positive_charmander}, '
@@ -182,9 +182,9 @@ print(
     f'Char -> TN: {true_negative_charmander}, '
     f'Char -> FN: {false_negative_charmander}, '
     f'Total Tests: {num_charmander_val}, '
-    f'Accuracy: {(true_positive_charmander + true_negative_charmander) / (true_positive_charmander + false_positive_charmander + true_negative_charmander + false_negative_charmander)}%',
-    f'Precision: {true_positive_charmander / (true_positive_charmander + false_positive_charmander)}%',
-    f'Recall: {true_positive_charmander / (true_positive_charmander + false_negative_charmander)}%',
+    f'Accuracy: {(true_positive_charmander + true_negative_charmander) / (true_positive_charmander + false_positive_charmander + true_negative_charmander + false_negative_charmander)}, ',
+    f'Precision: {true_positive_charmander / (true_positive_charmander + false_positive_charmander)}, ',
+    f'Recall: {true_positive_charmander / (true_positive_charmander + false_negative_charmander)}',
     )
 print(
     f'Pika -> TP: {true_positive_pikachu}, '
@@ -192,9 +192,9 @@ print(
     f'Pika -> TN: {true_negative_pikachu}, '
     f'Pika -> FN: {false_negative_pikachu}, '
     f'Total Tests: {num_pikachu_val}, '
-    f'Accuracy: {(true_positive_pikachu + true_negative_pikachu) / (true_positive_pikachu + false_positive_pikachu + true_negative_pikachu + false_negative_pikachu)}%',
-    f'Precision: {true_positive_pikachu / (true_positive_pikachu + false_positive_pikachu)}%',
-    f'Recall: {true_positive_pikachu / (true_positive_pikachu + false_negative_pikachu)}%',
+    f'Accuracy: {(true_positive_pikachu + true_negative_pikachu) / (true_positive_pikachu + false_positive_pikachu + true_negative_pikachu + false_negative_pikachu)}, ',
+    f'Precision: {true_positive_pikachu / (true_positive_pikachu + false_positive_pikachu)}, ',
+    f'Recall: {true_positive_pikachu / (true_positive_pikachu + false_negative_pikachu)}',
     )
 print(
     f'Squi -> TP: {true_positive_squirtle}, '
@@ -202,7 +202,7 @@ print(
     f'Squi -> TN: {true_negative_squirtle}, '
     f'Squi -> FN: {false_negative_squirtle}, '
     f'Total Tests: {num_squirtle_val}, '
-    f'Accuracy: {(true_positive_squirtle + true_negative_squirtle) / (true_positive_squirtle + false_positive_squirtle + true_negative_squirtle + false_negative_squirtle)}%',
-    f'Precision: {true_positive_squirtle / (true_positive_squirtle + false_positive_squirtle)}%',
-    f'Recall: {true_positive_squirtle / (true_positive_squirtle + false_negative_squirtle)}%',
+    f'Accuracy: {(true_positive_squirtle + true_negative_squirtle) / (true_positive_squirtle + false_positive_squirtle + true_negative_squirtle + false_negative_squirtle)}, ',
+    f'Precision: {true_positive_squirtle / (true_positive_squirtle + false_positive_squirtle)}, ',
+    f'Recall: {true_positive_squirtle / (true_positive_squirtle + false_negative_squirtle)}',
     )
