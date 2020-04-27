@@ -7,7 +7,7 @@ from os.path import isfile, join
 import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
-s
+
 # Folders Setup
 # Data Folder
 data_dir = os.path.join(os.path.dirname('.'), 'data')

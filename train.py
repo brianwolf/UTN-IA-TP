@@ -82,9 +82,8 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 # Generate the model
 model = Sequential([
-    Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),  # Converts the source to a 784 array
-    Dense(units=10240, activation='relu'),
-    Dense(units=10240, activation='relu'),
+    Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),
+    Dense(units=20480, activation='relu'),
     Dense(total_classes, activation='softmax')
 ])
 
