@@ -88,8 +88,8 @@ model = Sequential([
 ])
 
 # Compile the model
-model.compile(optimizer=optimizers.Adam(lr=learning_rate),
-              loss='categorical_crossentropy',
+model.compile(optimizer=optimizers.SGD(lr=learning_rate),
+              loss='mse',
               metrics=['accuracy'])
 
 # Print a summary of the model

@@ -41,9 +41,6 @@ IMG_WIDTH = 100
 # Model Loading
 model = load_model(model_file)
 model.load_weights(weights_file)
-model.compile(optimizer='adam',
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
 
 
 # PokemonType Enum
@@ -72,8 +69,6 @@ def predict(file: str) -> PokemonType:
         return PokemonType.PIKACHU
     elif answer == 3:
         return PokemonType.SQUIRTLE
-
-    return PokemonType.UNKNOWN
 
 
 # BULBASAUR TESTS
