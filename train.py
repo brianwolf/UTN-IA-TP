@@ -37,7 +37,7 @@ model_plot_file = os.path.join(model_dir, 'Model.png')
 
 # Basic Params
 batch_size = 2
-epochs = 100
+epochs = 200
 IMG_HEIGHT = 100
 IMG_WIDTH = 100
 total_classes = 4  # 4 different types of pokemons in our dataset
@@ -83,7 +83,8 @@ val_data_gen = validation_image_generator.flow_from_directory(
 # Generate the model
 model = Sequential([
     Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),
-    Dense(units=20480, activation='relu'),
+    Dense(units=512, activation='relu'),
+    Dense(units=512, activation='relu'),
     Dense(total_classes, activation='softmax')
 ])
 

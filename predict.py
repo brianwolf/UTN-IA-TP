@@ -49,7 +49,6 @@ class PokemonType(Enum):
     CHARMANDER = 'CHARMANDER'
     PIKACHU = 'PIKACHU'
     SQUIRTLE = "SQUIRTLE"
-    UNKNOWN = 'UNKNOWN'
 
 
 # Predict Function
