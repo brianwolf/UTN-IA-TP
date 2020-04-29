@@ -50,14 +50,8 @@ else:
 # Get Images
 train_image_generator = ImageDataGenerator(
     rescale=1. / 255,
-    horizontal_flip=True,
-    # vertical_flip=True,
-    # rotation_range=45,
-    # zoom_range=0.5,
-    # shear_range=0.5,
-    # width_shift_range=0.5,
-    # height_shift_range=0.5,)
-    )
+    horizontal_flip=True
+)
 
 validation_image_generator = ImageDataGenerator(
     rescale=1. / 255)
@@ -82,9 +76,9 @@ val_data_gen = validation_image_generator.flow_from_directory(
 
 # Generate the model
 model = Sequential([
-    Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),
-    Dense(units=512, activation='relu'),
-    Dense(units=512, activation='relu'),
+    Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),  # Converts the source to a 784 array
+    Dense(units=1024, activation='relu'),
+    Dense(units=1024, activation='relu'),
     Dense(total_classes, activation='softmax')
 ])
 
@@ -102,10 +96,10 @@ plot_model(model, to_file=model_plot_file, show_shapes='true', show_layer_names=
 # Train the model
 history = model.fit(
     x=train_data_gen,
-    steps_per_epoch=total_train // batch_size,
+    steps_per_epoch=1000,  # (total_train // batch_size) * 2,
     epochs=epochs,
     validation_data=val_data_gen,
-    validation_steps=total_val // batch_size
+    validation_steps=200,  # (total_val // batch_size) * 2
 )
 
 # Save the model results
