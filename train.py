@@ -1,4 +1,6 @@
-from tensorflow.python.keras.layers import Flatten, Dropout, Reshape
+from tensorflow.python.keras.backend import sigmoid
+from tensorflow.python.keras.layers import Flatten, Dropout, Reshape, Activation
+from tensorflow.python.keras.utils.generic_utils import get_custom_objects
 from tensorflow.python.keras.utils.vis_utils import plot_model
 from tensorflow import optimizers
 from tensorflow.keras.models import Sequential
@@ -74,11 +76,19 @@ val_data_gen = validation_image_generator.flow_from_directory(
     class_mode='categorical',
     save_to_dir=output_validation_dir)
 
+
+# We define the swish activation function and import it to keras
+def swish(x, beta=1):
+    return x * sigmoid(beta * x)
+
+
+get_custom_objects().update({'swish': Activation(swish)})
+
 # Generate the model
 model = Sequential([
     Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),  # Converts the source to a 784 array
-    Dense(units=1024, activation='relu'),
-    Dense(units=1024, activation='relu'),
+    Dense(units=1024, activation='swish'),
+    Dense(units=1024, activation='swish'),
     Dense(total_classes, activation='softmax')
 ])
 
@@ -96,10 +106,10 @@ plot_model(model, to_file=model_plot_file, show_shapes='true', show_layer_names=
 # Train the model
 history = model.fit(
     x=train_data_gen,
-    steps_per_epoch=1000,  # (total_train // batch_size) * 2,
+    steps_per_epoch=(total_train // batch_size) * 2,
     epochs=epochs,
     validation_data=val_data_gen,
-    validation_steps=200,  # (total_val // batch_size) * 2
+    validation_steps=(total_val // batch_size) * 2
 )
 
 # Save the model results
