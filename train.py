@@ -39,7 +39,7 @@ model_plot_file = os.path.join(model_dir, 'Model.png')
 
 # Basic Params
 batch_size = 2
-epochs = 200
+epochs = 400
 IMG_HEIGHT = 28
 IMG_WIDTH = 28
 total_classes = 4  # 4 different types of pokemons in our dataset
@@ -76,19 +76,11 @@ val_data_gen = validation_image_generator.flow_from_directory(
     class_mode='categorical',
     save_to_dir=output_validation_dir)
 
-
-# We define the swish activation function and import it to keras
-def swish(x, beta=1):
-    return x * sigmoid(beta * x)
-
-
-get_custom_objects().update({'swish': Activation(swish)})
-
 # Generate the model
 model = Sequential([
     Reshape((IMG_HEIGHT * IMG_WIDTH,), input_shape=(IMG_HEIGHT, IMG_WIDTH,)),  # Converts the source to a 784 array
-    Dense(units=1024, activation='swish'),
-    Dense(units=1024, activation='swish'),
+    Dense(units=512, activation='relu'),
+    Dense(units=512, activation='relu'),
     Dense(total_classes, activation='softmax')
 ])
 
