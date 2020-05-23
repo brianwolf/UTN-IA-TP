@@ -98,10 +98,10 @@ plot_model(model, to_file=model_plot_file, show_shapes='true', show_layer_names=
 # Train the model
 history = model.fit(
     x=train_data_gen,
-    steps_per_epoch=(total_train // batch_size) * 2,
+    steps_per_epoch=(total_train // batch_size),
     epochs=epochs,
     validation_data=val_data_gen,
-    validation_steps=(total_val // batch_size) * 2
+    validation_steps=(total_val // batch_size)
 )
 
 # Save the model results
