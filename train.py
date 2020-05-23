@@ -40,8 +40,8 @@ model_plot_file = os.path.join(model_dir, 'Model.png')
 # Basic Params
 batch_size = 2
 epochs = 200
-IMG_HEIGHT = 100
-IMG_WIDTH = 100
+IMG_HEIGHT = 28
+IMG_WIDTH = 28
 total_classes = 4  # 4 different types of pokemons in our dataset
 learning_rate = 0.001
 if backend.image_data_format == "channels_last":
