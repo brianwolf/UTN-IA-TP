@@ -35,8 +35,8 @@ model_file = os.path.join(model_dir, 'model.h5')
 weights_file = os.path.join(model_dir, 'weights.h5')
 
 # Basic Params
-IMG_HEIGHT = 100
-IMG_WIDTH = 100
+IMG_HEIGHT = 28
+IMG_WIDTH = 28
 
 # Model Loading
 model = load_model(model_file)
